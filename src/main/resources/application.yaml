@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: nbsadapter
+
+logging:
+  file: logs/nbsadapter.log
+  
+  pattern:
+    console: "%d %-5level %logger : %file-%line : %msg%n"
+    file:    "%d %-5level [%thread] %logger : [ramesh] : %msg%n"
+    
+  level:
+    com.apps.restfulApp.api.controller: ERROR
+
+---
+spring:
+  profiles: development
+
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost;databaseName=msdb
+    username:
+    password:
+    
+thread-pooling:
+  core-pool-size: 25
+  max-pool-size: 300
+
+server:
+  tomcat:
+    accept-count: 100
+    max-connections: 10000
+    max-threads: 200
