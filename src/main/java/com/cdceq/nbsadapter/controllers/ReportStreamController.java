@@ -17,11 +17,12 @@ import 	org.springframework.beans.factory.annotation.Value;
 import  org.springframework.http.HttpStatus;
 import 	org.springframework.http.MediaType;
 import  org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.GetMapping;
 import  org.springframework.web.bind.annotation.PostMapping;
 import  org.springframework.web.bind.annotation.RestController;
 //import  org.springframework.web.bind.annotation.RequestHeader;
 import 	org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import	java.util.List;
 
@@ -35,6 +36,16 @@ public class ReportStreamController {
 
     public ReportStreamController() {
     }
+    
+    @GetMapping(path = "/elrs")
+    @ApiOperation(value = "Get all elrs")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = String.class)})
+    public ResponseEntity<String> getAll() throws Exception {
+    	serviceProvider.findAll();
+    	String outMsg = "Check logs";
+    	logger.info(outMsg);
+        return new ResponseEntity<>(outMsg, HttpStatus.OK);
+    }    
     
     @PostMapping(path = "/elr")
     @ApiOperation(value = "Post ELR data")
