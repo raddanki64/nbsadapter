@@ -27,6 +27,10 @@
         <springfox.swagger.ui.version>2.9.2</springfox.swagger.ui.version>
  		<jjwt.version>0.11.1</jjwt.version>
         <commons.version>2.5</commons.version>
+		<camel.version>2.22.2</camel.version>
+		<camel.filestarter.version>3.0.0</camel.filestarter.version>
+		<camel.hl7.version>2.22.2</camel.hl7.version>
+		<ca.uhn.hapi.version>2.2-beta1</ca.uhn.hapi.version>
     </properties> 	
 
 	<dependencies>
@@ -40,7 +44,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
+
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-test</artifactId>
@@ -48,10 +52,38 @@
 		</dependency>		
 		
 		<!-- Camel spring starter modules -->
-		
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-file-starter</artifactId>
+			<version>${camel.filestarter.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-hl7-starter</artifactId>
+			<version>${camel.hl7.version}</version>
+		</dependency>
+
 		<!-- Camel modules -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
 		
 		<!-- Third party modules -->
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-base</artifactId>
+			<version>${ca.uhn.hapi.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v26</artifactId>
+			<version>${ca.uhn.hapi.version}</version>
+		</dependency>
+
 		<dependency>
     		<groupId>org.projectlombok</groupId>
     		<artifactId>lombok</artifactId>
