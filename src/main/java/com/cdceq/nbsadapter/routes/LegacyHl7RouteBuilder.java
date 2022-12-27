@@ -20,8 +20,11 @@ import	com.cdceq.nbsadapter.processors.XmlDataPersister;
 public class LegacyHl7RouteBuilder extends RouteBuilder {
     private static Logger logger = LoggerFactory.getLogger(LegacyHl7RouteBuilder.class);
 
-	@Value("${report-stream.hl7-files-url}")
-	private String hl7FilesDirectoryUrl;
+	@Value("${report-stream.hl7-local-files-dir-url}")
+	private String hl7FilesLocalDirectoryUrl;
+
+	@Value("${report-stream.hl7-docker-files-dir-url}")
+	private String hl7FilesDockerDirectoryUrl;
 
 	@Autowired
 	private Hl7ToXmlTransformer hl7ToXmlTransformer;
@@ -31,7 +34,7 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-		logger.info("Report stream hl7 files directory = {}", hl7FilesDirectoryUrl);
+		logger.info("Report stream hl7 files directory = {}", hl7FilesLocalDirectoryUrl);
 
         onException(ValidationException.class)
         .log("Observed validation exception")
@@ -47,12 +50,19 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
         .logStackTrace(true)
         .end();
         
-		from(hl7FilesDirectoryUrl)
-		.routeId("Legacy.Hl7.FilesConsumer.Route")
+		from(hl7FilesLocalDirectoryUrl)
+		.routeId("Legacy.Hl7.LocalFilesConsumer.Route")
+		.log("Processing file ${headers.CamelFileName} from local file system")
+		.to(hl7FilesDockerDirectoryUrl)
+		.end();
+
+		from(hl7FilesDockerDirectoryUrl)
+		.routeId("Legacy.Hl7.DockerFilesConsumer.Route")
+		.log("Processing file ${headers.CamelFileName} from docker file system")
 		.process(hl7ToXmlTransformer)
 		.log("Xml: ${body}")
 		.process(xmlDataPersister)
-		.log("Persisted file ${headers.CamelFileName} as xml message to sql server database")
+		.log("Processed file ${headers.CamelFileName}, persisted as xml message to sql server database")
 		.end();
     }
 }
