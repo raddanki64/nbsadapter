@@ -3,6 +3,8 @@
 
 target/
 
+hl7-data-files/report-stream-generated-files/.camel/
+
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
