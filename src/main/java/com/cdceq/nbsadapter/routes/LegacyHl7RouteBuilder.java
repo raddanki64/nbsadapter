@@ -1,6 +1,5 @@
 package com.cdceq.nbsadapter.routes;
 
-import org.apache.camel.Exchange;
 import  org.springframework.beans.factory.annotation.Autowired;
 import 	org.springframework.beans.factory.annotation.Value;
 import  org.springframework.stereotype.Component;
@@ -18,13 +17,16 @@ import	com.cdceq.nbsadapter.processors.XmlDataPersister;
 @Component
 @NoArgsConstructor
 public class LegacyHl7RouteBuilder extends RouteBuilder {
-    private static Logger logger = LoggerFactory.getLogger(LegacyHl7RouteBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(LegacyHl7RouteBuilder.class);
 
-	@Value("${report-stream.hl7-local-files-dir-url}")
-	private String hl7FilesLocalDirectoryUrl;
+	@Value("${report-stream.hl7-files-dir-url}")
+	private String hl7FilesDirectoryUrl;
 
-	@Value("${report-stream.hl7-docker-files-dir-url}")
-	private String hl7FilesDockerDirectoryUrl;
+	@Value("${kafka-broker.outbound.hl7-messages-endpoint}")
+	private String 	hl7MsgsEndpoint;
+
+	@Value("${kafka-broker.outbound.xml-messages-endpoint}")
+	private String 	xmlMsgsEndpoint;
 
 	@Autowired
 	private Hl7ToXmlTransformer hl7ToXmlTransformer;
@@ -33,8 +35,8 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 	private XmlDataPersister xmlDataPersister;
 
     @Override
-    public void configure() throws Exception {
-		logger.info("Report stream hl7 files directory = {}", hl7FilesLocalDirectoryUrl);
+    public void configure() {
+		logger.info("Report stream hl7 files directory = {}", hl7FilesDirectoryUrl);
 
         onException(ValidationException.class)
         .log("Observed validation exception")
@@ -49,20 +51,26 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
         .useOriginalMessage()
         .logStackTrace(true)
         .end();
-        
-		from(hl7FilesLocalDirectoryUrl)
-		.routeId("Legacy.Hl7.LocalFilesConsumer.Route")
-		.log("Processing file ${headers.CamelFileName} from local file system")
-		.to(hl7FilesDockerDirectoryUrl)
-		.end();
 
-		from(hl7FilesDockerDirectoryUrl)
+		from(hl7FilesDirectoryUrl)
 		.routeId("Legacy.Hl7.DockerFilesConsumer.Route")
-		.log("Processing file ${headers.CamelFileName} from docker file system")
+		.log("Processing file ${headers.CamelFileName} from file system")
 		.process(hl7ToXmlTransformer)
 		.log("Xml: ${body}")
+		//.to("seda:xml_persist_to_db_route", "seda:kafka_xml_producer_route")
+		.process(xmlDataPersister)
+		.end();
+
+		/*
+		from("seda:xml_persist_to_db_route")
 		.process(xmlDataPersister)
 		.log("Processed file ${headers.CamelFileName}, persisted as xml message to sql server database")
 		.end();
+
+		from("seda:kafka_xml_producer_route")
+		//.to(xmlMsgsEndpoint)
+		.log("Dispatched to kafka xml messages topic")
+		.end();
+		 */
     }
 }
