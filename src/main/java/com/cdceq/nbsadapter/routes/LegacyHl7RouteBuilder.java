@@ -22,10 +22,10 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 	@Value("${report-stream.hl7-files-dir-url}")
 	private String hl7FilesDirectoryUrl;
 
-	@Value("${kafka-broker.outbound.hl7-messages-endpoint}")
+	@Value("${kafka.outbound.hl7-messages-endpoint}")
 	private String 	hl7MsgsEndpoint;
 
-	@Value("${kafka-broker.outbound.xml-messages-endpoint}")
+	@Value("${kafka.outbound.xml-messages-endpoint}")
 	private String 	xmlMsgsEndpoint;
 
 	@Autowired
@@ -53,15 +53,22 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
         .end();
 
 		from(hl7FilesDirectoryUrl)
-		.routeId("Legacy.Hl7.DockerFilesConsumer.Route")
+		.routeId("Legacy.Hl7.FilesConsumer.Route")
+		.to("seda:hl7_file_processing_route", "seda:kafka_hl7_producer_route")
+		.end();
+
+		from("seda:kafka_hl7_producer_route")
+		//.to(hl7MsgsEndpoint)
+		.log("Dispatched to kafka hl7 messages topic")
+		.end();
+
+		from("seda:hl7_file_processing_route")
 		.log("Processing file ${headers.CamelFileName} from file system")
 		.process(hl7ToXmlTransformer)
 		.log("Xml: ${body}")
-		//.to("seda:xml_persist_to_db_route", "seda:kafka_xml_producer_route")
-		.process(xmlDataPersister)
+		.to("seda:xml_persist_to_db_route", "seda:kafka_xml_producer_route")
 		.end();
 
-		/*
 		from("seda:xml_persist_to_db_route")
 		.process(xmlDataPersister)
 		.log("Processed file ${headers.CamelFileName}, persisted as xml message to sql server database")
@@ -71,6 +78,5 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 		//.to(xmlMsgsEndpoint)
 		.log("Dispatched to kafka xml messages topic")
 		.end();
-		 */
     }
 }

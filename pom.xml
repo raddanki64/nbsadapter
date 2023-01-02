@@ -27,9 +27,9 @@
         <springfox.swagger.ui.version>2.9.2</springfox.swagger.ui.version>
  		<jjwt.version>0.11.1</jjwt.version>
         <commons.version>2.5</commons.version>
-		<camel.version>2.22.2</camel.version>
+		<camel.core.version>3.0.0</camel.core.version>
 		<camel.filestarter.version>3.0.0</camel.filestarter.version>
-		<camel.hl7.version>2.22.2</camel.hl7.version>
+		<camel.hl7.version>3.0.0-RC3</camel.hl7.version>
 		<ca.uhn.hapi.version>2.2-beta1</ca.uhn.hapi.version>
     </properties> 	
 
@@ -60,13 +60,6 @@
 
 		<dependency>
 			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-seda-starter</artifactId>
-			<version>3.0.0-RC3</version>
-			<!-- use the same version as your Camel core version -->
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-hl7-starter</artifactId>
 			<version>${camel.hl7.version}</version>
 		</dependency>
@@ -75,13 +68,13 @@
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
-			<version>${camel.version}</version>
+			<version>${camel.core.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-kafka</artifactId>
-			<version>2.25.4</version>
+			<version>3.0.0</version>
 		</dependency>
 
 		<!-- Third party modules -->
