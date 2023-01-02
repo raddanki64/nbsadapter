@@ -58,7 +58,7 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 		.end();
 
 		from("seda:kafka_hl7_producer_route")
-		//.to(hl7MsgsEndpoint)
+		.to(hl7MsgsEndpoint)
 		.log("Dispatched to kafka hl7 messages topic")
 		.end();
 
@@ -75,7 +75,7 @@ public class LegacyHl7RouteBuilder extends RouteBuilder {
 		.end();
 
 		from("seda:kafka_xml_producer_route")
-		//.to(xmlMsgsEndpoint)
+		.to(xmlMsgsEndpoint)
 		.log("Dispatched to kafka xml messages topic")
 		.end();
     }
